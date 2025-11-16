@@ -1,0 +1,3 @@
+- L'importanza di regolarizzare tutte le feature, non solo alcune selezionate, per evitare overfitting, e di utilizzare tecniche come il one-hot encoding per le variabili categoriche. (quartieri, tipologia di contratto, ecc.)
+- La necessità di eseguire un'analisi esplorativa dei dati per notare pattern, outlier e relazioni tra variabili.
+- L'importanza di scegliere tecniche per la gestione del dato mancante che siano appropriate per il dataset specifico (ad esempio, l'uso della media invece della mediana per l'imputazione).
