@@ -1,0 +1,245 @@
+Quartiere,InsideGRA,Zone
+Acilia,False,South
+Africano - Villa Chigi,True,North
+Alessandrino - Torre Spaccata,True,East
+Anagnina,True,Southeast
+Appia Pignatelli,True,Southeast
+Appio Claudio - Statuario,True,Southeast
+Appio Latino,True,Southeast
+Arco di Travertino,True,Southeast
+Ardeatino - Montagnola,True,South
+Aurelio - Val Cannuta,True,Southwest
+Aventino,True,Center
+Axa,False,South
+Baldo degli Ubaldi,True,Southwest
+Balduina,True,Northwest
+Barberini,True,Center
+Battistini - Primavalle,True,Southwest
+Boccea,True,Southwest
+Bologna,True,North
+Borghesiana,True,East
+Borgo,True,Center
+Bufalotta,True,Northeast
+Camilluccia - Farnesina,True,Northwest
+Campo de' Fiori,True,Center
+Capannelle - Statuario,True,Southeast
+Casal Bernocchi,False,South
+Casal Bertone,True,Northeast
+Casal Boccone,True,Northeast
+Casal Bruciato,True,Northeast
+Casal Lumbroso,False,Southwest
+Casal Monastero,True,Northeast
+Casal Palocco,False,South
+Casal Selce,True,Southwest
+Casalotti,True,Southwest
+Case Rosse,True,Northeast
+Casetta Mattei - Corviale,True,Southwest
+Cassia - San Godenzo,True,Northwest
+Castel Fusano,False,South
+Castel di Leva,False,South
+Castelverde,True,East
+Castro Pretorio,True,Center
+Cecchignola - Giuliano Dalmata,True,South
+Centocelle,True,East
+Centro Giano,False,South
+Cesano,False,Northwest
+Cinecittà,True,Southeast
+Cipro,True,Northwest
+Città Giardino,True,Northeast
+Colle Oppio,True,Center
+Colli Albani,True,Southeast
+Colli Aniene,True,Northeast
+Colli Portuensi - Casaletto,True,Southwest
+Collina delle Muse,True,Southwest
+Colosseo - Fori Imperiali,True,Center
+Conca d'Oro - Valli,True,Northeast
+Corcolle,True,East
+Cornelia - Montespaccato,True,Southwest
+Cortina d'Ampezzo,True,Northwest
+Dragona,False,South
+Due Ponti,True,Northwest
+Esquilino,True,Center
+Euclide,True,Northwest
+Eur,True,South
+Falcognana,False,South
+Fidene,True,Northeast
+Finocchio,True,East
+Fioranello,False,South
+Flaminio,True,Northwest
+Fleming,True,Northwest
+Fontana Candida,True,East
+Fonte Meravigliosa,True,South
+Fonte Ostiense,True,South
+Furio Camillo,True,Southeast
+Garbatella,True,South
+Gemelli - Pineta Sacchetti,True,Northwest
+Ghetto - Portico d'Ottavia,True,Center
+Giardinetti,True,East
+Gregorio VII - Piccolomini,True,Southwest
+Grottarossa - Saxa Rubra,True,Northwest
+Infernetto,False,South
+La Giustiniana,True,Northwest
+La Storta,False,Northwest
+Labaro,True,Northwest
+Largo Argentina,True,Center
+Lunghezza,False,East
+Magliana,True,Southwest
+Maglianella,False,Southwest
+Malafede,False,South
+Marconi,True,Southwest
+Massimina,False,Southwest
+Mazzini - Delle Vittorie,True,Northwest
+Medaglie d'Oro,True,Northwest
+Mezzocammino,True,South
+Monte Mario - Trionfale,True,Northwest
+Monte Migliore,False,South
+Montecitorio,True,Center
+Monteverde Nuovo,True,Southwest
+Monteverde Vecchio,True,Southwest
+Monti,True,Center
+Monti Tiburtini,True,Northeast
+Morena,True,Southeast
+Mostacciano,True,South
+Navigatori,True,South
+Nuovo Salario,True,Northeast
+Olgiata,False,Northwest
+Osteria Nuova,False,Northwest
+Ostia Antica,False,South
+Ostia Levante,False,South
+Ostia Ponente,False,South
+Ostiense,True,South
+Ottavia,True,Northwest
+Pantheon,True,Center
+Parco de' Medici - Muratella,False,Southwest
+Parioli,True,Northwest
+Piana del Sole,False,Southwest
+Piazza Navona,True,Center
+Piazza Umberto Cardani,True,Southeast
+Piazza del Popolo,True,Center
+Piazzale degli Eroi,True,Northwest
+Pietralata,True,Northeast
+Pigneto,True,East
+Pinciano - Villa Ada,True,Northwest
+Pisana - Bravetta,True,Southwest
+Policlinico,True,North
+Ponte Galeria,False,Southwest
+Ponte Mammolo,True,Northeast
+Ponte Milvio,True,Northwest
+Ponte di Nona,True,East
+Porta di Roma,True,Northeast
+Portuense,True,Southwest
+Prati,True,Northwest
+Prima Porta,True,Northwest
+Quadraro,True,Southeast
+Quarto Miglio,True,Southeast
+Re di Roma,True,Southeast
+Repubblica,True,Center
+Rinnovamento,True,South
+Rocca Cencia,False,East
+Roma 70,True,South
+Romanina,True,Southeast
+Salario - Porta Pia,True,North
+Sallustiano,True,Center
+San Basilio,True,Northeast
+San Giovanni,True,Southeast
+San Lorenzo,True,North
+San Paolo,True,South
+San Saba - Caracalla,True,Center
+San Vittorino,False,East
+Serpentara,True,Northeast
+Settebagni,False,Northeast
+Settecamini,True,Northeast
+Spagna,True,Center
+Spinaceto,True,South
+Talenti - Monte Sacro,True,Northeast
+Testaccio,True,South
+Tiberina,False,Northwest
+Tintoretto,True,South
+Tomba di Nerone,True,Northwest
+Tor Cervara,True,Northeast
+Tor Pagnotta,True,South
+Tor Sapienza - La Rustica,True,Northeast
+Tor Tre Teste - Torre Maura,True,East
+Tor Vergata,True,East
+Tor de' Cenci,True,South
+Tor de' Schiavi,True,East
+Tor di Quinto,True,Northwest
+Torpignattara,True,East
+Torre Angela,True,East
+Torre Gaia,True,East
+Torresina,True,Southwest
+Torrevecchia,True,Southwest
+Torricola - Tor Carbone,True,South
+Torrino,True,South
+Trastevere,True,Center
+Trevi,True,Center
+Trieste - Coppedè,True,North
+Trigoria,False,South
+Trullo - Colle del Sole,True,Southwest
+Tufello,True,Northeast
+Valle Aurelia,True,Southwest
+Valle Muricana,False,Northwest
+Valle Santa,False,Southwest
+Vallerano,True,South
+Via Acaia,True,Southeast
+Via Alessandro Fleming,True,Northwest
+Via Alessandro Malladra,True,Northeast
+Via Alfredo Catalani,True,Northeast
+Via Aliprando Caprioli,True,Northeast
+Via Amico da Venafro,True,East
+Via Anicia,True,Center
+Via Annia Regilla,True,Southeast
+Via Antonio Roiti,True,Southwest
+Via Archimede,True,Northwest
+Via Ardea,True,Southeast
+Via Augusto Casciani,True,Southeast
+Via Caio Mario,True,Northwest
+Via Capo d'Africa,True,Center
+Via Capodistria,True,North
+Via Cesare Rasponi,True,Southeast
+Via Crescenzo del Monte,True,Northeast
+Via Dell'Impruneta,True,Southwest
+Via Ettore Petrolini,True,Southeast
+Via Giulia,True,Center
+Via Giuseppe Donati,True,Northeast
+Via Gran Sasso,True,Northeast
+Via Ivrea,True,Northwest
+Via Latina,True,Southeast
+Via Luigi Vittorio Bertarelli,True,Northeast
+Via Malcesine,True,Northeast
+Via Nostra Signora di Lourdes,True,Southwest
+Via Novara,True,Northwest
+Via Ottaviano,True,Northwest
+Via Pietro Bembo,True,Southwest
+Via Riccardo Billi,True,Northeast
+Via Salaria,True,Northeast
+Via Santa Giovanna Elisabetta,True,Southwest
+Via Santi Cosma e Damiano,True,Southeast
+Via Segesta,True,Southeast
+Via Simeto,True,North
+Via Ugo da Porta Ravegnana,True,Northeast
+Via Val d'Ossola,True,Northeast
+Via Vezio Crisafulli,True,Southwest
+Via Vigne di San Matteo,True,South
+Via degli Etruschi,True,Northeast
+Via dei Funari,True,Center
+Via dei Giornalisti,True,Northwest
+Via dei Latini,True,North
+Via dei Prati dei Papa,True,South
+Via del Ponte delle Sette Miglia,True,East
+Via di Castel di Leva,False,South
+Via di Tor Vergata,True,East
+Via di Vigna Stelluti,True,Northwest
+Viale della Tecnica,True,South
+Viale delle Mura Latine,True,Southeast
+Viale di Valle Aurelia,True,Southwest
+Vigna Clara - Vigna Stelluti,True,Northwest
+Vigne Nuove - Casale Nei,True,Northeast
+Villa Bonelli,True,Southwest
+Villa Fiorelli,True,Southeast
+Villa Gordiani,True,Northeast
+Villaggio Olimpico,True,Northwest
+Vincenzo Tieri,False,Northwest
+Vitinia,False,South
+Vittorio Veneto,True,Center
+via di Montoro,True,Center
