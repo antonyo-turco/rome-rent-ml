@@ -2,38 +2,37 @@
 \contentsline {subsection}{\numberline {1.1}Motivation}{3}{subsection.1.1}%
 \contentsline {subsection}{\numberline {1.2}Objectives}{3}{subsection.1.2}%
 \contentsline {subsection}{\numberline {1.3}Report Structure}{3}{subsection.1.3}%
-\contentsline {section}{\numberline {2}Dataset Description}{5}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Dataset Selection}{5}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Data Preprocessing}{5}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Handling Missing Data}{5}{subsubsection.2.2.1}%
-\contentsline {subsubsection}{\numberline {2.2.2}Feature Normalization}{5}{subsubsection.2.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.3}Data Splitting}{5}{subsubsection.2.2.3}%
-\contentsline {subsubsection}{\numberline {2.2.4}Feature Engineering (Optional)}{5}{subsubsection.2.2.4}%
-\contentsline {section}{\numberline {3}Methodology}{5}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Models Implemented}{5}{subsection.3.1}%
-\contentsline {subsubsection}{\numberline {3.1.1}Naïve Bayes}{5}{subsubsection.3.1.1}%
-\contentsline {subsubsection}{\numberline {3.1.2}Logistic Regression}{5}{subsubsection.3.1.2}%
-\contentsline {subsubsection}{\numberline {3.1.3}Softmax Regression (Optional)}{5}{subsubsection.3.1.3}%
-\contentsline {subsubsection}{\numberline {3.1.4}Decision Tree}{5}{subsubsection.3.1.4}%
-\contentsline {subsubsection}{\numberline {3.1.5}Random Forest}{5}{subsubsection.3.1.5}%
-\contentsline {subsubsection}{\numberline {3.1.6}Support Vector Machine}{5}{subsubsection.3.1.6}%
-\contentsline {subsection}{\numberline {3.2}Hyperparameter Tuning}{5}{subsection.3.2}%
-\contentsline {section}{\numberline {4}Results}{5}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Model Performance}{5}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Confusion Matrices}{5}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}ROC Curves and AUC}{5}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Training vs. Validation Performance}{5}{subsection.4.4}%
-\contentsline {subsection}{\numberline {4.5}Computational Cost (Optional)}{5}{subsection.4.5}%
-\contentsline {section}{\numberline {5}Comparative Analysis}{5}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Best Performing Models}{5}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Model Assumptions and Performance}{5}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Overfitting Trade-off}{5}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Visualizations}{5}{subsection.5.4}%
-\contentsline {subsubsection}{\numberline {5.4.1}Learning Curves}{5}{subsubsection.5.4.1}%
-\contentsline {subsubsection}{\numberline {5.4.2}Decision Boundaries}{5}{subsubsection.5.4.2}%
-\contentsline {subsubsection}{\numberline {5.4.3}Feature Importance}{5}{subsubsection.5.4.3}%
-\contentsline {section}{\numberline {6}Conclusions}{6}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Summary of Findings}{6}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Key Takeaways}{6}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}Limitations}{6}{subsection.6.3}%
-\contentsline {subsection}{\numberline {6.4}Future Work}{6}{subsection.6.4}%
+\contentsline {section}{\numberline {2}Dataset Description}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Dataset Selection}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Data Preprocessing}{4}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Feature Normalization}{9}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Data Splitting}{9}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Feature Engineering (Optional)}{9}{subsubsection.2.2.3}%
+\contentsline {section}{\numberline {3}Methodology}{9}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Models Implemented}{9}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Naïve Bayes}{9}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Logistic Regression}{9}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Softmax Regression (Optional)}{9}{subsubsection.3.1.3}%
+\contentsline {subsubsection}{\numberline {3.1.4}Decision Tree}{9}{subsubsection.3.1.4}%
+\contentsline {subsubsection}{\numberline {3.1.5}Random Forest}{9}{subsubsection.3.1.5}%
+\contentsline {subsubsection}{\numberline {3.1.6}Support Vector Machine}{9}{subsubsection.3.1.6}%
+\contentsline {subsection}{\numberline {3.2}Hyperparameter Tuning}{9}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Results}{9}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Model Performance}{9}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Confusion Matrices}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}ROC Curves and AUC}{9}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Training vs. Validation Performance}{9}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Computational Cost (Optional)}{9}{subsection.4.5}%
+\contentsline {section}{\numberline {5}Comparative Analysis}{9}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Best Performing Models}{9}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Model Assumptions and Performance}{9}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Overfitting Trade-off}{9}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Visualizations}{9}{subsection.5.4}%
+\contentsline {subsubsection}{\numberline {5.4.1}Learning Curves}{9}{subsubsection.5.4.1}%
+\contentsline {subsubsection}{\numberline {5.4.2}Decision Boundaries}{9}{subsubsection.5.4.2}%
+\contentsline {subsubsection}{\numberline {5.4.3}Feature Importance}{9}{subsubsection.5.4.3}%
+\contentsline {section}{\numberline {6}Conclusions}{10}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Summary of Findings}{10}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Key Takeaways}{10}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Limitations}{10}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Future Work}{10}{subsection.6.4}%

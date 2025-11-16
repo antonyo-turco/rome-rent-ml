@@ -5,15 +5,128 @@
 \section{Dataset Description}\label{sec:dataset}
 
 \subsection{Dataset Selection}
-% Describe the dataset chosen from UCI ML Repository or Kaggle
-% Explain why this dataset was selected
-% Mention the number of instances, features, and classes
+The dataset is taken from Kaggle and was uploaded 2 years ago by user Tommaso Ramella. It contains data scraped from the website Immobiliare.it about housing announcements in Italy in the year 2023. The author provides the public with two different datasets: the first is about rentals and the second contains purchase listings. Two different versions of each are available, a raw one, consisting of the original data, and a clean one. On the page, the author states the intention to provide a notebook with the methodology applied to parse and clean the data, but we were not able to find the complete version of this notebook (a part of the process can be found in the data publisher’s GitHub folder) and as such we assume it was never released. While at the start we were inclined to just use the clean version for rents, in the end we decided against it and tried to gain more insight into the data by doing the work ourselves and trying to get as many features as we could.
+
+The raw dataset contains around 126000 entries. Due to the number of elements in the original set, it was decided to apply machine learning techniques to a smaller subset of interest; that is, the rents in the city of Rome, a sore spot for students and a field with very practical ramifications and consequences. Our objective was to create a way for someone to get a basic understanding of the price a house should have given its characteristics, to avoid being fooled.
+
+The records in the dataset related to Rome are 13276, with 47 columns of information for each of them; however some of those are very sparse and do not contain values for the majority of the rows. By sampling the data, it was possible to quickly determine some important underlying structure that could cause problems if not addressed properly: most importantly, we were able to find fields that contained null values (where to this invalid value could not be quickly associated some meaning) and columns with extraordinary outliers. Particularly, real estate listings for commercial properties (for example, offices) created some significant outliers in the price distribution, with some listings being orders of magnitude more expensive than the average rent for a house.
 
 \subsection{Data Preprocessing}
-% Describe the preprocessing steps performed
+Most features are categorical, and a small subset is instead numerical; most notably, “prezzo” (price), “stanze” (rooms), and “m2” (square meters). The price feature has been chosen for regression tasks: as such, we will not be using it to do any kind of feature augmentation, in order to avoid data leakage. Our hypothesis is that some features will have a very strong impact: for example, the surface area, the floor or whether the house is an apartment or not. Initially there was skepticism about the importance of the “quartiere” feature, but in the end we were able to see some interesting results.
+However, some of this information is not represented as machine-readable data or explicitly codified in the raw database and it was necessary to process it in order to get a dataframe where it was possible to apply the models provided by our Machine Learning framework of choice, scikit-learn.
 
-\subsubsection{Handling Missing Data}
-% Explain how missing or noisy data was handled
+\begin{itemize}
+  \item \textbf{prezzo} $\rightarrow$ prezzo (float)  
+  \begin{itemize}
+    \item Removed ``/mese'' suffix and special characters (``€'' symbol)
+    \item Converted to numeric values
+  \end{itemize}
+
+  \item \textbf{stanze} $\rightarrow$ rooms, more\_than\_5\_rooms
+  \begin{itemize}
+    \item Converted to integer; ``5+'' becomes 5 with flag
+    \item Boolean indicator for properties with 5+ rooms
+  \end{itemize}
+
+  \item \textbf{m2} $\rightarrow$ m2 (float)
+  \begin{itemize}
+    \item Removed ``m²'' unit suffix
+    \item Converted to numeric
+  \end{itemize}
+
+  \item \textbf{bagni} $\rightarrow$ bathrooms, more\_than\_3\_bathrooms, bathrooms\_per\_locali
+  \begin{itemize}
+    \item ``3+'' becomes 3 with boolean flag
+    \item Ratio calculated: bathrooms / total\_rooms
+  \end{itemize}
+
+  \item \textbf{piano} $\rightarrow$ floor, ascensore, accesso\_disabili, piano\_rialzato, multi\_floor, totale\_piani\_edificio, ultimo\_piano
+  \begin{itemize}
+    \item Extracted floor number (ground=0, basement=-1)
+    \item Boolean flags for elevator, disability access, top floor status
+  \end{itemize}
+
+  \item \textbf{contratto} $\rightarrow$ affitto, affitto\_libero, affitto\_concordato, affitto\_transitorio, affitto\_studenti, affitto\_riscatto, immobile\_a\_reddito, affitto\_durata\_minima, affitto\_durata\_rinnovo
+  \begin{itemize}
+    \item Multiple boolean columns for contract types
+    \item Regex extraction for lease duration (e.g., ``3+2'' format)
+  \end{itemize}
+
+  \item \textbf{locali} $\rightarrow$ totale\_locali, camere\_da\_letto, altri\_locali, tipo\_cucina, campo\_da\_tennis
+  \begin{itemize}
+    \item Parsed room counts and kitchen type
+    \item One-hot encoded kitchen types (cucina\_\* columns)
+  \end{itemize}
+
+  \item \textbf{Posti Auto} $\rightarrow$ garage\_box, esterno, parcheggio\_comune, box\_privato, has\_garage\_box, has\_esterno, has\_parcheggio\_comune, has\_box\_privato
+  \begin{itemize}
+    \item Regex parsing for parking types
+    \item Boolean indicators for presence of each type
+  \end{itemize}
+
+  \item \textbf{stato} $\rightarrow$ stato\_condition, stato\_renovation + one-hot encoded
+  \begin{itemize}
+    \item Split ``Condition / Renovation'' format
+    \item Created stato\_condition\_\* and stato\_renovation\_\* columns
+  \end{itemize}
+
+  \item \textbf{tipologia} $\rightarrow$ 22 boolean columns (appartamento, attico, villa\_unifamiliare, etc.)
+  \begin{itemize}
+    \item One-hot encoded property types
+  \end{itemize}
+
+  \item \textbf{disponibilità} $\rightarrow$ disponibilita (boolean)
+  \begin{itemize}
+    \item True if contains ``libero'' (available)
+  \end{itemize}
+
+  \item \textbf{anno di costruzione} $\rightarrow$ anno\_di\_costruzione (int)
+  \begin{itemize}
+    \item Converted year to integer
+  \end{itemize}
+
+  \item \textbf{riscaldamento} $\rightarrow$ 16 boolean columns (riscaldamento\_autonomo, riscaldamento\_metano, etc.)
+  \begin{itemize}
+    \item Parsed heating system type and energy source
+  \end{itemize}
+
+  \item \textbf{Climatizzatore} $\rightarrow$ 6 boolean columns (climatizzatore\_autonomo, climatizzatore\_freddo, etc.)
+  \begin{itemize}
+    \item System type and cooling/heating capabilities
+  \end{itemize}
+
+  \item \textbf{Efficienza energetica} $\rightarrow$ efficienza\_classe, efficienza\_classe\_numerica, efficienza\_consumo\_kwh
+  \begin{itemize}
+    \item Extracted energy class (A--G) and consumption (kWh/m²/year)
+  \end{itemize}
+
+  \item \textbf{altre caratteristiche} $\rightarrow$ 31 boolean columns (terrazza, ascensore, piscina, etc.)
+  \begin{itemize}
+    \item Feature detection via string matching
+  \end{itemize}
+
+  \item \textbf{description} $\rightarrow$ 11 columns (metro, stazione, universita, ospedale, parco, doccia, vasca, luminoso, silenzioso, guardaroba, mercato)
+  \begin{itemize}
+    \item Binary indicators for nearby amenities mentioned in text
+  \end{itemize}
+
+  \item \textbf{quartiere} $\rightarrow$ One-hot encoded (quartiere\_\* columns)
+  \begin{itemize}
+    \item Neighborhood categories
+  \end{itemize}
+
+  \item \textbf{spese condominio} $\rightarrow$ spese\_condominio (float)
+  \begin{itemize}
+    \item Handled ``N.D.'', ``nessuna'', etc. as 0.0
+    \item Converted to numeric
+  \end{itemize}
+
+  \item \textbf{cauzione} $\rightarrow$ cauzione (float)
+  \begin{itemize}
+    \item Removed currency symbols and converted to numeric
+  \end{itemize}
+\end{itemize}
+
 
 \subsubsection{Feature Normalization}
 % Describe normalization or standardization techniques applied
