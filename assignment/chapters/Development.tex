@@ -9,135 +9,52 @@ The dataset is taken from Kaggle and was uploaded 2 years ago by user Tommaso Ra
 
 The raw dataset contains around 126000 entries. Due to the number of elements in the original set, it was decided to apply machine learning techniques to a smaller subset of interest; that is, the rents in the city of Rome, a sore spot for students and a field with very practical ramifications and consequences. Our objective was to create a way for someone to get a basic understanding of the price a house should have given its characteristics, to avoid being fooled.
 
-The records in the dataset related to Rome are 13276, with 47 columns of information for each of them; however some of those are very sparse and do not contain values for the majority of the rows. By sampling the data, it was possible to quickly determine some important underlying structure that could cause problems if not addressed properly: most importantly, we were able to find fields that contained null values (where to this invalid value could not be quickly associated some meaning) and columns with extraordinary outliers. Particularly, real estate listings for commercial properties (for example, offices) created some significant outliers in the price distribution, with some listings being orders of magnitude more expensive than the average rent for a house.
+The records in the dataset related to Rome (\texttt{rome\_rents\_raw.csv}) are 13276, with 38 columns of information for each of them.
 
 \subsection{Data Preprocessing}
-Most features are categorical, and a small subset is instead numerical; most notably, “prezzo” (price), “stanze” (rooms), and “m2” (square meters). The price feature has been chosen for regression tasks: as such, we will not be using it to do any kind of feature augmentation, in order to avoid data leakage. Our hypothesis is that some features will have a very strong impact: for example, the surface area, the floor or whether the house is an apartment or not. Initially there was skepticism about the importance of the “quartiere” feature, but in the end we were able to see some interesting results.
-However, some of this information is not represented as machine-readable data or explicitly codified in the raw database and it was necessary to process it in order to get a dataframe where it was possible to apply the models provided by our Machine Learning framework of choice, scikit-learn.
+This section outlines the preprocessing pipeline implemented to transform raw rental listings into a structured dataset suitable for analysis and modeling.
 
-\begin{itemize}
-  \item \textbf{prezzo} $\rightarrow$ prezzo (float)  
-  \begin{itemize}
-    \item Removed ``/mese'' suffix and special characters (``€'' symbol)
-    \item Converted to numeric values
-  \end{itemize}
+The first step in the preprocessing pipeline involves standardizing the dataset structure. All column headers in the raw dataset, originally in Italian, are renamed to English to ensure consistency and readability throughout the analysis.  Following this translation, specific cleaning operations are performed on each column to handle missing values and remove noise.
 
-  \item \textbf{stanze} $\rightarrow$ rooms, more\_than\_5\_rooms
-  \begin{itemize}
-    \item Converted to integer; ``5+'' becomes 5 with flag
-    \item Boolean indicator for properties with 5+ rooms
-  \end{itemize}
+\subsubsection{Handling Missing or Noisy Data}
+The raw data presented several challenges typical of web-scraped real estate listings. Numeric fields contained currency symbols, unit suffixes, and text values that needed systematic cleaning. For monetary columns like \texttt{price}, \texttt{condo\_fees}, and \texttt{deposit}, we removed currency symbols (€) and text indicators (e.g., ``/mese''), converting text representations of zero (``nessuna'', ``n.d.'') to 0.0 and parsing valid entries as floats. Similarly, \texttt{square\_meters} required stripping the m² suffix before numeric conversion.
 
-  \item \textbf{m2} $\rightarrow$ m2 (float)
-  \begin{itemize}
-    \item Removed ``m²'' unit suffix
-    \item Converted to numeric
-  \end{itemize}
+Room and bathroom columns used notations like ``5+'' so we addressed this by extracting the base integer while creating separate boolean flags (\texttt{more\_than\_5\_rooms}, \texttt{more\_than\_3\_bathrooms}) to preserve the additional information without compromising data type integrity. The \texttt{floor} column required more sophisticated normalization, mapping Italian descriptions (ex. ground floor, basement ec...) to standardized integers (0 for ground floor, -1 for basement). We had this approach based on the hypothesis that a higher floor number could correlate with higher rental prices in Rome, due to better views and reduced street noise.
 
-  \item \textbf{bagni} $\rightarrow$ bathrooms, more\_than\_3\_bathrooms, bathrooms\_per\_locali
-  \begin{itemize}
-    \item ``3+'' becomes 3 with boolean flag
-    \item Ratio calculated: bathrooms / total\_rooms
-  \end{itemize}
+\subsubsection{Complex Feature Extraction}
+Several columns column contained structured information embedded within seemingly unstructured text, requiring sophisticated parsing to extract multiple features from single fields.
 
-  \item \textbf{piano} $\rightarrow$ floor, ascensore, accesso\_disabili, piano\_rialzato, multi\_floor, totale\_piani\_edificio, ultimo\_piano
-  \begin{itemize}
-    \item Extracted floor number (ground=0, basement=-1)
-    \item Boolean flags for elevator, disability access, top floor status
-  \end{itemize}
+The \texttt{floor} column exemplifies this complexity. Beyond the floor number itself that we already addressed, descriptions often included accessibility information such as elevator availability or disability access. We extracted some distinct boolean features from this field: elevator presence, disability accessibility, raised floor status, multi-floor properties and top floor location.
 
-  \item \textbf{contratto} $\rightarrow$ affitto, affitto\_libero, affitto\_concordato, affitto\_transitorio, affitto\_studenti, affitto\_riscatto, immobile\_a\_reddito, affitto\_durata\_minima, affitto\_durata\_rinnovo
-  \begin{itemize}
-    \item Multiple boolean columns for contract types
-    \item Regex extraction for lease duration (e.g., ``3+2'' format)
-  \end{itemize}
+The \texttt{contract} field proved particularly rich, as Italian rental law recognizes multiple contract types with varying legal implications. We parsed nine features including contract type, minimum duration and renewal terms (often expressed as ``3+2'' for 3 years plus 2-year renewal), and specialized categories such as student rentals, transitional contracts, and buyout options.
 
-  \item \textbf{locali} $\rightarrow$ totale\_locali, camere\_da\_letto, altri\_locali, tipo\_cucina, campo\_da\_tennis
-  \begin{itemize}
-    \item Parsed room counts and kitchen type
-    \item One-hot encoded kitchen types (cucina\_\* columns)
-  \end{itemize}
+From \texttt{rooms\_details}, we separated total room count from bedrooms and other spaces, classified kitchen types (reflecting Italian distinctions between full kitchens and kitchenettes), and identified special amenities. The \texttt{condition} field was split into overall property condition and renovation status, later one-hot encoded into binary features.
 
-  \item \textbf{Posti Auto} $\rightarrow$ garage\_box, esterno, parcheggio\_comune, box\_privato, has\_garage\_box, has\_esterno, has\_parcheggio\_comune, has\_box\_privato
-  \begin{itemize}
-    \item Regex parsing for parking types
-    \item Boolean indicators for presence of each type
-  \end{itemize}
+Parking information (\texttt{parking\_spaces}) was decomposed into counts for garage/box spaces, outdoor parking, common areas, and private boxes, with corresponding boolean flags for presence detection.
 
-  \item \textbf{stato} $\rightarrow$ stato\_condition, stato\_renovation + one-hot encoded
-  \begin{itemize}
-    \item Split ``Condition / Renovation'' format
-    \item Created stato\_condition\_\* and stato\_renovation\_\* columns
-  \end{itemize}
+The \texttt{other\_features} column yielded 31 binary indicators for amenities ranging from outdoor spaces (terrace, balconies, garden, swimming pool) to security features (alarm, video intercom, security door), utilities (fiber optic, elevator), furnishing status, and property orientation (south-facing, east-facing, internal/external exposure).
 
-  \item \textbf{tipologia} $\rightarrow$ 22 boolean columns (appartamento, attico, villa\_unifamiliare, etc.)
-  \begin{itemize}
-    \item One-hot encoded property types
-  \end{itemize}
+Energy efficiency was handled by extracting both the categorical class (A--G, mapped to numeric values 1--7) and the consumption value in kWh/m²·year using regex patterns to accommodate various formats. The \texttt{availability} field was simplified to a boolean indicating immediate availability, while \texttt{year\_built} was cleaned and converted to an integer \texttt{construction\_year}.
 
-  \item \textbf{disponibilità} $\rightarrow$ disponibilita (boolean)
-  \begin{itemize}
-    \item True if contains ``libero'' (available)
-  \end{itemize}
+Finally, the free-text \texttt{description} column was converted to structured boolean features through keyword extraction. We identified high-value indicators of location amenities (subway, train station, university, hospital, park), property characteristics (bright, quiet), fixtures (shower, bathtub, wardrobe), and nearby services (market), transforming unstructured narrative into quantifiable features that preserve semantic information about desirability and accessibility.
 
-  \item \textbf{anno di costruzione} $\rightarrow$ anno\_di\_costruzione (int)
-  \begin{itemize}
-    \item Converted year to integer
-  \end{itemize}
+\subsubsection{Adding Geographic Information}
+Given that listings provided only neighborhood names, we enriched the dataset with geographic context by mapping each neighborhood to three features using an external reference file: a boolean indicator for location within the GRA (Great Ring Road, \texttt{inside\_gra}), a categorical zone feature (\texttt{zone}: center, north, south, east, west), and the administrative municipality (\texttt{municipality}). This geographic stratification provides essential location context for price prediction, as rental values in Rome vary significantly by area.
 
-  \item \textbf{riscaldamento} $\rightarrow$ 16 boolean columns (riscaldamento\_autonomo, riscaldamento\_metano, etc.)
-  \begin{itemize}
-    \item Parsed heating system type and energy source
-  \end{itemize}
+\subsubsection{One-Hot Encoding}
+We transformed categorical columns into comprehensive boolean feature sets to capture property characteristics systematically. 
 
-  \item \textbf{Climatizzatore} $\rightarrow$ 6 boolean columns (climatizzatore\_autonomo, climatizzatore\_freddo, etc.)
-  \begin{itemize}
-    \item System type and cooling/heating capabilities
-  \end{itemize}
-
-  \item \textbf{Efficienza energetica} $\rightarrow$ efficienza\_classe, efficienza\_classe\_numerica, efficienza\_consumo\_kwh
-  \begin{itemize}
-    \item Extracted energy class (A--G) and consumption (kWh/m²/year)
-  \end{itemize}
-
-  \item \textbf{altre caratteristiche} $\rightarrow$ 31 boolean columns (terrazza, ascensore, piscina, etc.)
-  \begin{itemize}
-    \item Feature detection via string matching
-  \end{itemize}
-
-  \item \textbf{description} $\rightarrow$ 11 columns (metro, stazione, universita, ospedale, parco, doccia, vasca, luminoso, silenzioso, guardaroba, mercato)
-  \begin{itemize}
-    \item Binary indicators for nearby amenities mentioned in text
-  \end{itemize}
-
-  \item \textbf{quartiere} $\rightarrow$ One-hot encoded (quartiere\_\* columns)
-  \begin{itemize}
-    \item Neighborhood categories
-  \end{itemize}
-
-  \item \textbf{spese condominio} $\rightarrow$ spese\_condominio (float)
-  \begin{itemize}
-    \item Handled ``N.D.'', ``nessuna'', etc. as 0.0
-    \item Converted to numeric
-  \end{itemize}
-
-  \item \textbf{cauzione} $\rightarrow$ cauzione (float)
-  \begin{itemize}
-    \item Removed currency symbols and converted to numeric
-  \end{itemize}
-\end{itemize}
-
-
-\subsubsection{Feature Normalization}
-% Describe normalization or standardization techniques applied
+The \texttt{property\_type} column generated 22 binary flags covering dwelling types (condominium, various villa configurations, penthouse, loft, farmhouse), luxury classifications (prestigious, middle, economical class), and ownership structures (full, partial, usufruct, timeshare).
 
 \subsubsection{Data Splitting}
 % Explain how data was split into training, validation, and test sets
 % Mention the ratios used (e.g., 60-20-20 or 70-15-15)
 
-\subsubsection{Feature Engineering (Optional)}
-% If applicable, describe any dimensionality reduction (PCA) or feature selection performed
+\subsubsection{Feature Normalization}
+% Describe normalization or standardization techniques applied
 
+\subsubsection{Feature Engineering}
+% If applicable, describe any dimensionality reduction (PCA) or feature selection performed
 
 \section{Methodology}\label{sec:methodology}
 
