@@ -696,6 +696,7 @@ def add_municipio(row):
     municipio_df_lower = municipio_df['Quartiere'].str.lower().str.strip()
     quartiere = row['neighborhood']
     feats = {
+        'neighborhood': quartiere,
         'municipality': None,
         'InsideGRA': None,
         'zone': None
@@ -793,9 +794,6 @@ def main():
     print("Parsing stato...")
     stato_data = data.apply(parse_stato, axis=1)
     cleaned_data = pd.concat([cleaned_data, stato_data], axis=1)
-    stato_condition_dummies = pd.get_dummies(cleaned_data['stato_condition'], prefix='stato_condition')
-    stato_renovation_dummies = pd.get_dummies(cleaned_data['stato_renovation'], prefix='stato_renovation')
-    cleaned_data = pd.concat([cleaned_data, stato_condition_dummies, stato_renovation_dummies], axis=1)
     
     print("Parsing tipologia...")
     tipologia_data = data.apply(parse_housetype, axis=1)
@@ -834,11 +832,42 @@ def main():
     print("Adding municipio...")
     municipio_data = data.apply(add_municipio, axis=1)
     cleaned_data = pd.concat([cleaned_data, municipio_data], axis=1)
-    
+
+    cleaned_data.columns = [col.lower().replace(" ", "_") for col in cleaned_data.columns]
+
+    # Merge duplicate columns (columns that became identical after renaming).
+    # For boolean groups we take the OR across columns; for others we take the first non-null value per row.
+    # This avoids ambiguous truth-value checks and the deprecated axis=1 groupby usage.
+    import pandas.api.types as ptypes
+
+    merged_cols = []
+    for name in pd.unique(cleaned_data.columns):
+        group = cleaned_data.loc[:, cleaned_data.columns == name]
+        if group.shape[1] == 1:
+            # single column: keep as-is
+            merged_cols.append(group.iloc[:, 0].rename(name))
+        else:
+            # multiple columns with same name: decide how to collapse
+            # if all columns are boolean-like, use logical OR across the row
+            if all(ptypes.is_bool_dtype(dt) for dt in group.dtypes):
+                s = group.any(axis=1)
+                merged_cols.append(s.rename(name))
+            else:
+                # otherwise prefer the first non-null value across the duplicate columns
+                # using bfill along axis=1 then take the first column
+                s = group.bfill(axis=1).iloc[:, 0]
+                merged_cols.append(s.rename(name))
+
+    if merged_cols:
+        cleaned_data = pd.concat(merged_cols, axis=1)
+    else:
+        # fallback: keep original
+        cleaned_data = cleaned_data.copy()
     
     # Reset index
     cleaned_data = cleaned_data.reset_index(drop=True)
-    
+
+    # all features should be small letters and underscores
     print(f"\nFinal cleaned dataset shape: {cleaned_data.shape}")
     
     # Save to CSV
