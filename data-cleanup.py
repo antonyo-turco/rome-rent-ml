@@ -10,8 +10,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 
 def clean_price(row, warning=False):
-    """Clean the 'prezzo' column by removing /mese and converting to float."""
-    price = row['prezzo']
+    """Clean the 'price' column by removing /mese and converting to float."""
+    price = row['price']
     if isinstance(price, str):
         price = price.replace('/mese', '')
         price = price.replace('\x80', '').replace(".", "").strip()
@@ -26,7 +26,7 @@ def clean_price(row, warning=False):
 
 def clean_spese_condominio(row, warning=False):
     """Clean and convert spese condominio to float."""
-    spese = row['spese condominio']
+    spese = row['condo_fees']
     if isinstance(spese, str):
         spese = spese.replace('\x80', '').replace(".", "").strip()
         if spese.lower() in ['n.d.', 'nessuna', 'nessun', 'nessuno', 'non indicato', 
@@ -44,7 +44,7 @@ def clean_spese_condominio(row, warning=False):
 
 def clean_mq(row, warning=False):
     """Clean and convert m2 to float."""
-    mq = row['m2']
+    mq = row['square_meters']
     if isinstance(mq, str):
         mq = mq.replace('m²', '').strip()
         try:
@@ -58,7 +58,7 @@ def clean_mq(row, warning=False):
 
 def clean_rooms(row, warning=False):
     """Parse rooms column handling 5+ notation."""
-    stanze = row['stanze']
+    stanze = row['rooms']
     if isinstance(stanze, str):
         stanze = stanze.strip()
         if stanze == '5+':
@@ -76,7 +76,7 @@ def clean_rooms(row, warning=False):
 
 def clean_floor(row, warning=False):
     """Parse floor information including elevator and accessibility."""
-    piano = row['piano']
+    piano = row['floor']
     ascensore = False
     accesso_disabili = False
     piano_rialzato = False
@@ -128,18 +128,18 @@ def clean_floor(row, warning=False):
     
     return pd.Series({
         'floor': floor_value,
-        'ascensore': ascensore,
-        'accesso_disabili': accesso_disabili,
-        'piano_rialzato': piano_rialzato,
+        'lift': ascensore,
+        'disabled_access': accesso_disabili,
+        'raised_floor': piano_rialzato,
         'multi_floor': multi_floor,
-        'totale_piani_edificio': totale_piani_edificio,
-        'ultimo_piano': ultimo_piano
+        'total_floors_building': totale_piani_edificio,
+        'last_floor': ultimo_piano
     })
 
 
 def clean_contratto(row, warning=False):
     """Parse contract type information."""
-    contratto = row['contratto']
+    contratto = row['contract']
     affitto = False
     affitto_libero = False
     affitto_durata_minima = None
@@ -176,21 +176,21 @@ def clean_contratto(row, warning=False):
             affitto_durata_rinnovo = 0
     
     return pd.Series({
-        'affitto': affitto,
-        'affitto_libero': affitto_libero,
-        'affitto_durata_minima': affitto_durata_minima,
-        'affitto_durata_rinnovo': affitto_durata_rinnovo,
-        'affitto_concordato': affitto_concordato,
-        'affitto_transitorio': affitto_transitorio,
-        'affitto_studenti': affitto_studenti,
-        'affitto_riscatto': affitto_riscatto,
-        'immobile_a_reddito': immobile_a_reddito
+        'rent': affitto,
+        'free_rent': affitto_libero,
+        'rent_min_duration': affitto_durata_minima,
+        'rent_renewal_duration': affitto_durata_rinnovo,
+        'controlled_rent': affitto_concordato,
+        'short_term_rent': affitto_transitorio,
+        'student_rent': affitto_studenti,
+        'buyout_rent': affitto_riscatto,
+        'income_property': immobile_a_reddito
     })
 
 
 def clean_locali(row, warning=False):
     """Parse locali column for rooms and kitchen type."""
-    locali = row['locali']
+    locali = row['rooms_details']
     totale_locali = 0
     camere_da_letto = 0
     altri_locali = 0
@@ -215,17 +215,17 @@ def clean_locali(row, warning=False):
             tipo_cucina = match_cucina.group(1).strip()
     
     return pd.Series({
-        'totale_locali': totale_locali,
-        'camere_da_letto': camere_da_letto,
-        'altri_locali': altri_locali,
-        'tipo_cucina': tipo_cucina,
-        'campo_da_tennis': campo_da_tennis
+        'room_total': totale_locali,
+        'bedrooms': camere_da_letto,
+        'other_rooms': altri_locali,
+        'kitchen_type': tipo_cucina,
+        'tennis_court': campo_da_tennis
     })
 
 
 def clean_bathrooms(row, warning=False):
     """Parse bathrooms handling 3+ notation."""
-    bagni = row['bagni']
+    bagni = row['bathrooms']
     more_than_3_bathrooms = False
     
     if isinstance(bagni, str):
@@ -246,34 +246,34 @@ def clean_bathrooms(row, warning=False):
 
 def parse_parking(row):
     """Parse parking information."""
-    posti_auto = row['Posti Auto']
+    posti_auto = row['parking_spaces']
     garage_box = 0
-    esterno = 0
-    parcheggio_comune = 0
-    box_privato = 0
+    outdoor_parking = 0
+    common_parking = 0
+    private_box = 0
 
     if isinstance(posti_auto, str):
         garage_box_matches = re.findall(r'(\d+) in garage/box', posti_auto)
-        esterno_matches = re.findall(r'(\d+) all\'esterno', posti_auto)
-        parcheggio_comune_matches = re.findall(r'(\d+) in parcheggio/garage comune', posti_auto)
-        box_privato_matches = re.findall(r'(\d+) in box privato/box in garage', posti_auto)
+        outdoor_parking_matches = re.findall(r'(\d+) all\'esterno', posti_auto)
+        common_parking_matches = re.findall(r'(\d+) in parcheggio/garage comune', posti_auto)
+        private_box_matches = re.findall(r'(\d+) in box privato/box in garage', posti_auto)
 
         garage_box = sum(map(int, garage_box_matches))
-        esterno = sum(map(int, esterno_matches))
-        parcheggio_comune = sum(map(int, parcheggio_comune_matches))
-        box_privato = sum(map(int, box_privato_matches))
+        outdoor_parking = sum(map(int, outdoor_parking_matches))
+        common_parking = sum(map(int, common_parking_matches))
+        private_box = sum(map(int, private_box_matches))
 
     return pd.Series({
         'garage_box': garage_box,
-        'esterno': esterno,
-        'parcheggio_comune': parcheggio_comune,
-        'box_privato': box_privato
+        'outdoor_parking': outdoor_parking,
+        'common_parking': common_parking,
+        'private_box': private_box
     })
 
 
 def parse_stato(row):
     """Parse stato column into condition and renovation status."""
-    stato = row['stato']
+    stato = row['condition']
     stato_condition = 'Unknown'
     stato_renovation = None
     
@@ -291,46 +291,76 @@ def parse_stato(row):
     })
 
 
-def parse_tipologia(row):
-    """Parse property type information."""
-    tipologia = row['tipologia']
+def parse_housetype(row):
+    """Parse property type information (English keys)."""
+    # support both renamed column 'property_type' and original 'tipologia'
+    housetype = row.get('property_type', row.get('tipologia', None))
+
     property_types = {
-        'appartamento': False,
-        'attico': False,
-        'villa_unifamiliare': False,
-        'villa_bifamiliare': False,
-        'villa_plurifamiliare': False,
+        'condominium': False,
+        'penthouse': False,
+        'single_family_villa': False,
+        'semi_detached_villa': False,
+        'multi_family_villa': False,
         'open_space': False,
-        'mansarda': False,
+        'attic': False,
         'loft': False,
-        'palazzo_edificio': False,
-        'casale': False,
-        'terratetto_unifamiliare': False,
-        'terratetto_plurifamiliare': False,
-        'classe_signorile': False,
-        'classe_media': False,
-        'classe_economica': False,
-        'immobile_di_lusso': False,
-        'intera_proprieta': False,
-        'parziale_proprieta': False,
-        'diritto_di_superficie': False,
-        'nuda_proprieta': False,
-        'usufrutto': False,
-        'multiproprieta': False
+        'building': False,
+        'farmhouse': False,
+        'terraced_house_single': False,
+        'terraced_house_multi': False,
+        'prestigious_class': False,
+        'middle_class': False,
+        'economical_class': False,
+        'luxury_property': False,
+        'full_ownership': False,
+        'partial_ownership': False,
+        'right_of_surface': False,
+        'bare_ownership': False,
+        'usufruct': False,
+        'timeshare': False
     }
 
-    if isinstance(tipologia, str):
-        tipologia = tipologia.lower()
-        for key in property_types.keys():
-            if key.replace('_', ' ') in tipologia:
-                property_types[key] = True
+    # map common Italian phrases to the English keys above
+    italian_to_english = {
+        'condominio': 'condominium',
+        'attico': 'penthouse',
+        'villa unifamiliare': 'single_family_villa',
+        'villa bifamiliare': 'semi_detached_villa',
+        'villa plurifamiliare': 'multi_family_villa',
+        'open space': 'open_space',
+        'mansarda': 'attic',
+        'loft': 'loft',
+        'palazzo': 'building',
+        'edificio': 'building',
+        'casale': 'farmhouse',
+        'terratetto unifamiliare': 'terraced_house_single',
+        'terratetto plurifamiliare': 'terraced_house_multi',
+        'classe signorile': 'prestigious_class',
+        'classe media': 'middle_class',
+        'classe economica': 'economical_class',
+        'immobile di lusso': 'luxury_property',
+        'intera proprietà': 'full_ownership',
+        'parziale proprietà': 'partial_ownership',
+        'diritto di superficie': 'right_of_surface',
+        'nuda proprietà': 'bare_ownership',
+        'usufrutto': 'usufruct',
+        'multiproprietà': 'timeshare',
+        'multiproprieta': 'timeshare'
+    }
+
+    if isinstance(housetype, str):
+        lower_ht = housetype.lower()
+        for it_term, en_key in italian_to_english.items():
+            if it_term in lower_ht:
+                property_types[en_key] = True
 
     return pd.Series(property_types)
 
 
 def clean_disponibilita(row, warning=False):
     """Parse disponibilita column."""
-    disponibilita = row['disponibilità']
+    disponibilita = row['availability']
     if isinstance(disponibilita, str):
         disponibilita = disponibilita.lower().strip()
         if 'libero' in disponibilita:
@@ -342,7 +372,7 @@ def clean_disponibilita(row, warning=False):
 
 def clean_anno_di_costruzione(row, warning=False):
     """Parse construction year."""
-    anno_di_costruzione = row['anno di costruzione']
+    anno_di_costruzione = row['year_built']
     if isinstance(anno_di_costruzione, str):
         anno_di_costruzione = anno_di_costruzione.strip()
         try:
@@ -356,7 +386,7 @@ def clean_anno_di_costruzione(row, warning=False):
 
 def clean_riscaldamento(row, warning=False):
     """Parse heating system information."""
-    riscaldamento = row['riscaldamento']
+    riscaldamento = row['heating']
     autonomo = False
     centralizzato = False
     radiatori = False
@@ -408,30 +438,29 @@ def clean_riscaldamento(row, warning=False):
             elettrico = True
         if 'pellet' in riscaldamento:
             pellet = True
-    
     return pd.Series({
-        'riscaldamento_autonomo': autonomo,
-        'riscaldamento_centralizzato': centralizzato,
-        'riscaldamento_radiatori': radiatori,
-        'riscaldamento_pavimento': pavimento,
-        'riscaldamento_aria': aria,
-        'riscaldamento_stufa': stufa,
-        'riscaldamento_gas': gas,
-        'riscaldamento_metano': metano,
-        'riscaldamento_gpl': gpl,
-        'riscaldamento_gasolio': gasolio,
-        'riscaldamento_pompa_calore': pompa_di_calore,
-        'riscaldamento_teleriscaldamento': teleriscaldamento,
-        'riscaldamento_fotovoltaico': fotovoltaico,
-        'riscaldamento_solare': solare,
-        'riscaldamento_elettrico': elettrico,
-        'riscaldamento_pellet': pellet
+        'heating_autonomous': autonomo,
+        'heating_centralized': centralizzato,
+        'heating_radiators': radiatori,
+        'heating_floor': pavimento,
+        'heating_air': aria,
+        'heating_stove': stufa,
+        'heating_gas': gas,
+        'heating_methane': metano,
+        'heating_gpl': gpl,
+        'heating_diesel': gasolio,
+        'heating_heat_pump': pompa_di_calore,
+        'heating_district_heating': teleriscaldamento,
+        'heating_photovoltaic': fotovoltaico,
+        'heating_solar': solare,
+        'heating_electric': elettrico,
+        'heating_pellet': pellet
     })
 
 
-def clean_climatizzatore(row, warning=False):
+def clean_air_conditioning(row, warning=False):
     """Parse air conditioning information."""
-    climatizzatore = row['Climatizzatore']
+    climatizzatore = row['air_conditioning']
     autonomo = False
     centralizzato = False
     predisposizione = False
@@ -455,18 +484,18 @@ def clean_climatizzatore(row, warning=False):
             caldo = True
     
     return pd.Series({
-        'climatizzatore_autonomo': autonomo,
-        'climatizzatore_centralizzato': centralizzato,
-        'climatizzatore_predisposizione': predisposizione,
-        'climatizzatore_freddo': freddo,
-        'climatizzatore_caldo': caldo,
-        'climatizzatore_assente': assente
+        'air_conditioning_autonomous': autonomo,
+        'air_conditioning_centralized': centralizzato,
+        'air_conditioning_prearranged': predisposizione,
+        'air_conditioning_cold': freddo,
+        'air_conditioning_hot': caldo,
+        'air_conditioning_absent': assente
     })
 
 
-def clean_efficienza_energetica(row, warning=False):
+def clean_energy_efficiency(row, warning=False):
     """Parse energy efficiency information."""
-    efficienza = row['Efficienza energetica']
+    efficienza = row['energy_efficiency']
     classe = None
     classe_numerica = None
     consumo_kwh = None
@@ -490,47 +519,46 @@ def clean_efficienza_energetica(row, warning=False):
                 consumo_kwh = None
     
     return pd.Series({
-        'efficienza_classe': classe,
-        'efficienza_classe_numerica': classe_numerica,
-        'efficienza_consumo_kwh': consumo_kwh
+        'energy_efficiency_class': classe,
+        'energy_efficiency_consumption_kwh': consumo_kwh
     })
 
 
-def parse_altre_caratteristiche(row):
+def parse_additional_features(row):
     """Parse additional property features."""
-    caratteristiche_str = row['altre caratteristiche']
+    caratteristiche_str = row['other_features']
     features = {
-        'terrazza': False,
+        'terrace': False,
         'reception': False,
-        'idromassaggio': False,
-        'ascensore': False,
-        'esposizione_sud': False,
-        'impianto_tv': False,
-        'portiere': False,
-        'balconi': False,
-        'taverna': False,
-        'cucina_arredata': False,
-        'videocitofono': False,
-        'box_garage': False,
-        'piscina': False,
-        'cantina': False,
-        'caminetto': False,
-        'esposizione_doppia': False,
-        'arredato': False,
-        'giardino': False,
-        'armadio_a_muro': False,
-        'piano_terra': False,
-        'mansarda': False,
-        'esposizione_interna': False,
-        'cancello_elettrico': False,
-        'esposizione_esterna': False,
-        'infissi_qualità': False,
-        'accesso_disabili': False,
-        'esposizione_est': False,
-        'campo_da_tennis': False,
-        'impianto_di_allarme': False,
-        'fibra_ottica': False,
-        'porta_blindata': False
+        'jacuzzi': False,
+        'elevator': False,
+        'south_facing': False,
+        'tv_system': False,
+        'concierge': False,
+        'balconies': False,
+        'tavern': False,
+        'furnished_kitchen': False,
+        'video_intercom': False,
+        'garage_box': False,
+        'swimming_pool': False,
+        'cellar': False,
+        'fireplace': False,
+        'double_exposure': False,
+        'furnished': False,
+        'garden': False,
+        'built_in_wardrobe': False,
+        'ground_floor': False,
+        'attic': False,
+        'internal_exposure': False,
+        'electric_gate': False,
+        'external_exposure': False,
+        'high_quality_windows': False,
+        'disabled_access': False,
+        'east_facing': False,
+        'tennis_court': False,
+        'alarm_system': False,
+        'fiber_optic': False,
+        'security_door': False
     }
 
     if isinstance(caratteristiche_str, str):
@@ -538,67 +566,67 @@ def parse_altre_caratteristiche(row):
         caratteristiche_str_lower = ' '.join(caratteristiche_lower)
         
         if any(x in caratteristiche_str_lower for x in ['balconi', '1 balcone', '2 balconi', '3 balconi', '4 balconi', '5 balconi', '6 balconi', '8 balconi', '18 balconi']):
-            features['balconi'] = True
+            features['balconies'] = True
         if any(x in caratteristiche_str_lower for x in ['impianto tv singolo', 'impianto tv centralizzato', 'impianto tv con parabola']):
-            features['impianto_tv'] = True
+            features['tv_system'] = True
         if any(x in caratteristiche_str_lower for x in ['portiere intera giornata', 'portiere mezza giornata']):
-            features['portiere'] = True
+            features['concierge'] = True
         if any(x in caratteristiche_str_lower for x in ['giardino privato', 'giardino comune', 'giardino privato e comune']):
-            features['giardino'] = True
+            features['garden'] = True
         if any(x in caratteristiche_str_lower for x in ['solo cucina arredata', 'parzialmente arredato']):
-            features['cucina_arredata'] = True
+            features['furnished_kitchen'] = True
         if any(x in caratteristiche_str_lower for x in ['box', 'garage', 'box/garage privato', '1 in box/garage privato']):
-            features['box_garage'] = True
+            features['garage_box'] = True
         if any(x in caratteristiche_str_lower for x in ['infissi', 'doppio vetro', 'triplo vetro']):
-            features['infissi_qualità'] = True
-        if 'porta blindata' in caratteristiche_str_lower:
-            features['porta_blindata'] = True
-        if 'terrazza' in caratteristiche_str_lower:
-            features['terrazza'] = True
+            features['high_quality_windows'] = True
+        if 'security door' in caratteristiche_str_lower:
+            features['security_door'] = True
+        if 'terrace' in caratteristiche_str_lower:
+            features['terrace'] = True
         if 'reception' in caratteristiche_str_lower:
             features['reception'] = True
-        if 'idromassaggio' in caratteristiche_str_lower:
-            features['idromassaggio'] = True
-        if 'ascensore' in caratteristiche_str_lower or 'con ascensore' in caratteristiche_str_lower:
-            features['ascensore'] = True
-        if 'esposizione sud' in caratteristiche_str_lower:
-            features['esposizione_sud'] = True
-        if 'taverna' in caratteristiche_str_lower:
-            features['taverna'] = True
-        if 'videocitofono' in caratteristiche_str_lower:
-            features['videocitofono'] = True
-        if 'piscina' in caratteristiche_str_lower:
-            features['piscina'] = True
-        if 'cantina' in caratteristiche_str_lower:
-            features['cantina'] = True
-        if 'caminetto' in caratteristiche_str_lower:
-            features['caminetto'] = True
-        if 'esposizione doppia' in caratteristiche_str_lower:
-            features['esposizione_doppia'] = True
-        if 'arredato' in caratteristiche_str_lower:
-            features['arredato'] = True
-        if 'armadio a muro' in caratteristiche_str_lower:
-            features['armadio_a_muro'] = True
-        if 'piano terra' in caratteristiche_str_lower:
-            features['piano_terra'] = True
-        if 'mansarda' in caratteristiche_str_lower:
-            features['mansarda'] = True
-        if 'esposizione interna' in caratteristiche_str_lower:
-            features['esposizione_interna'] = True
-        if 'cancello elettrico' in caratteristiche_str_lower:
-            features['cancello_elettrico'] = True
-        if 'esposizione esterna' in caratteristiche_str_lower:
-            features['esposizione_esterna'] = True
-        if 'accesso disabili' in caratteristiche_str_lower or 'con accesso disabili' in caratteristiche_str_lower:
-            features['accesso_disabili'] = True
-        if 'esposizione est' in caratteristiche_str_lower:
-            features['esposizione_est'] = True
-        if 'campo da tennis' in caratteristiche_str_lower:
-            features['campo_da_tennis'] = True
-        if 'impianto di allarme' in caratteristiche_str_lower:
-            features['impianto_di_allarme'] = True
-        if 'fibra ottica' in caratteristiche_str_lower:
-            features['fibra_ottica'] = True
+        if 'jacuzzi' in caratteristiche_str_lower:
+            features['jacuzzi'] = True
+        if 'elevator' in caratteristiche_str_lower or 'con ascensore' in caratteristiche_str_lower:
+            features['elevator'] = True
+        if 'south facing' in caratteristiche_str_lower:
+            features['south_facing'] = True
+        if 'tavern' in caratteristiche_str_lower:
+            features['tavern'] = True
+        if 'video intercom' in caratteristiche_str_lower:
+            features['video_intercom'] = True
+        if 'swimming pool' in caratteristiche_str_lower:
+            features['swimming_pool'] = True
+        if 'cellar' in caratteristiche_str_lower:
+            features['cellar'] = True
+        if 'fireplace' in caratteristiche_str_lower:
+            features['fireplace'] = True
+        if 'double exposure' in caratteristiche_str_lower:
+            features['double_exposure'] = True
+        if 'furnished' in caratteristiche_str_lower:
+            features['furnished'] = True
+        if 'built-in wardrobe' in caratteristiche_str_lower:
+            features['built_in_wardrobe'] = True
+        if 'ground floor' in caratteristiche_str_lower:
+            features['ground_floor'] = True
+        if 'attic' in caratteristiche_str_lower:
+            features['attic'] = True
+        if 'internal exposure' in caratteristiche_str_lower:
+            features['internal_exposure'] = True
+        if 'electric gate' in caratteristiche_str_lower:
+            features['electric_gate'] = True
+        if 'external exposure' in caratteristiche_str_lower:
+            features['external_exposure'] = True
+        if 'disabled access' in caratteristiche_str_lower or 'con accesso disabili' in caratteristiche_str_lower:
+            features['disabled_access'] = True
+        if 'east facing' in caratteristiche_str_lower:
+            features['east_facing'] = True
+        if 'tennis court' in caratteristiche_str_lower:
+            features['tennis_court'] = True
+        if 'alarm system' in caratteristiche_str_lower:
+            features['alarm_system'] = True
+        if 'fiber optic' in caratteristiche_str_lower:
+            features['fiber_optic'] = True
 
     return pd.Series(features)
 
@@ -607,59 +635,84 @@ def parse_description(row):
     """Parse description column for specific keywords."""
     description = row['description']
     features = {
-        "metro": 0,
-        "stazione": 0,
-        "universita": 0,
-        "ospedale": 0,
-        "parco": 0,
-        "doccia": 0,
-        "vasca": 0,
-        "luminoso": 0,
-        "silenzioso": 0,
-        "guardaroba": 0,
-        "mercato": 0,
+        "subway": 0,
+        "station": 0,
+        "university": 0,
+        "hospital": 0,
+        "park": 0,
+        "shower": 0,
+        "bathtub": 0,
+        "bright": 0,
+        "quiet": 0,
+        "wardrobe": 0,
+        "market": 0,
     }
 
     if isinstance(description, str):
         description = description.lower()
         if "metro" or "metropolitana" in description:
-            features["metro"] = 1
+            features["subway"] = 1
         if "stazione" or "treno" in description:
-            features["stazione"] = 1
+            features["station"] = 1
         if "universita" or "università" in description:
-            features["universita"] = 1
+            features["university"] = 1
         if "ospedale" in description:
-            features["ospedale"] = 1
+            features["hospital"] = 1
         if "parco" in description:
-            features["parco"] = 1
+            features["park"] = 1
         if "doccia" in description:
-            features["doccia"] = 1
+            features["shower"] = 1
         if "vasca" in description:
-            features["vasca"] = 1
+            features["bathtub"] = 1
         if "luminoso" or "luminosa" in description:
-            features["luminoso"] = 1
+            features["bright"] = 1
         if "silenzioso" or "silenziosa" in description:
-            features["silenzioso"] = 1
+            features["quiet"] = 1
         if "guardaroba" in description:
-            features["guardaroba"] = 1
+            features["wardrobe"] = 1
         if "mercato" or "supermercato" or "super market" or "supermarket" in description:
-            features["mercato"] = 1
+            features["market"] = 1
 
     return pd.Series(features)
 
 
-def clean_cauzione(row, warning=False):
+def clean_deposit(row, warning=False):
     """Parse deposit (cauzione) as float."""
-    cauzione = row['cauzione']
-    if isinstance(cauzione, str):
-        cauzione = cauzione.replace('\x80', '').replace(".", "").strip()
+    deposit = row['deposit']
+    if isinstance(deposit, str):
+        deposit = deposit.replace('\x80', '').replace(".", "").strip()
         try:
-            return float(cauzione)
+            return float(deposit)
         except ValueError:
             if warning:
-                print(f"Warning: Could not convert cauzione '{row['cauzione']}' to float.")
+                print(f"Warning: Could not convert deposit '{row['deposit']}' to float.")
             return None
-    return cauzione
+    return deposit  
+
+municipio_df = pd.read_csv('italy-house-prices/quartieri_mapping_with_municipio.csv', encoding='latin1')
+
+def add_municipio(row):
+    """Add municipio based on neighborhood."""
+    municipio_df_lower = municipio_df['Quartiere'].str.lower().str.strip()
+    quartiere = row['neighborhood']
+    feats = {
+        'municipality': None,
+        'InsideGRA': None,
+        'zone': None
+    }
+
+    if isinstance(quartiere, str):
+        quartiere = quartiere.lower().strip()
+        match = municipio_df_lower[municipio_df_lower == quartiere]
+        if not match.empty:
+            municipio = municipio_df.loc[match.index[0], 'Municipio']
+            inside_gra = municipio_df.loc[match.index[0], 'InsideGRA']
+            zone = municipio_df.loc[match.index[0], 'Zone']
+            feats['municipality'] = municipio
+            feats['InsideGRA'] = inside_gra
+            feats['zone'] = zone
+            return pd.Series(feats)
+    return None
 
 
 def main():
@@ -699,10 +752,10 @@ def main():
     
     # Apply all cleaning functions
     print("Cleaning price...")
-    cleaned_data['prezzo'] = data.apply(clean_price, axis=1)
+    cleaned_data['price'] = data.apply(clean_price, axis=1)
     
     print("Cleaning spese condominio...")
-    cleaned_data['spese_condominio'] = data.apply(clean_spese_condominio, axis=1)
+    cleaned_data['condo_fees'] = data.apply(clean_spese_condominio, axis=1)
     
     print("Cleaning m2...")
     cleaned_data['m2'] = data.apply(clean_mq, axis=1)
@@ -722,22 +775,20 @@ def main():
     print("Cleaning locali...")
     locali_data = data.apply(clean_locali, axis=1)
     cleaned_data = pd.concat([cleaned_data, locali_data], axis=1)
-    tipo_cucina_dummies = pd.get_dummies(cleaned_data['tipo_cucina'], prefix='cucina')
-    cleaned_data = pd.concat([cleaned_data, tipo_cucina_dummies], axis=1)
-    
+
     print("Cleaning bathrooms...")
     bathrooms_data = data.apply(clean_bathrooms, axis=1)
-    bathrooms_per_locali = bathrooms_data['bathrooms'] / cleaned_data['totale_locali']
-    bathrooms_data['bathrooms_per_locali'] = bathrooms_per_locali
+    bathrooms_per_room = bathrooms_data['bathrooms'] / cleaned_data['room_total']
+    bathrooms_data['bathrooms_per_room'] = bathrooms_per_room
     cleaned_data = pd.concat([cleaned_data, bathrooms_data], axis=1)
     
     print("Parsing parking...")
     temp_parking_data = data.apply(parse_parking, axis=1)
     cleaned_data = pd.concat([cleaned_data, temp_parking_data], axis=1)
     cleaned_data['has_garage_box'] = cleaned_data['garage_box'] > 0
-    cleaned_data['has_esterno'] = cleaned_data['esterno'] > 0
-    cleaned_data['has_parcheggio_comune'] = cleaned_data['parcheggio_comune'] > 0
-    cleaned_data['has_box_privato'] = cleaned_data['box_privato'] > 0
+    cleaned_data['has_outdoor_parking'] = cleaned_data['outdoor_parking'] > 0
+    cleaned_data['has_common_parking'] = cleaned_data['common_parking'] > 0
+    cleaned_data['has_private_box'] = cleaned_data['private_box'] > 0
     
     print("Parsing stato...")
     stato_data = data.apply(parse_stato, axis=1)
@@ -747,55 +798,46 @@ def main():
     cleaned_data = pd.concat([cleaned_data, stato_condition_dummies, stato_renovation_dummies], axis=1)
     
     print("Parsing tipologia...")
-    tipologia_data = data.apply(parse_tipologia, axis=1)
+    tipologia_data = data.apply(parse_housetype, axis=1)
     cleaned_data = pd.concat([cleaned_data, tipologia_data], axis=1)
     
     print("Cleaning disponibilita...")
-    cleaned_data['disponibilita'] = data.apply(clean_disponibilita, axis=1)
+    cleaned_data['is_available'] = data.apply(clean_disponibilita, axis=1)
     
     print("Cleaning anno di costruzione...")
     anno_data = data.apply(clean_anno_di_costruzione, axis=1)
-    cleaned_data['anno_di_costruzione'] = anno_data
+    cleaned_data['construction_year'] = anno_data
     
     print("Cleaning riscaldamento...")
     riscaldamento_data = data.apply(clean_riscaldamento, axis=1)
     cleaned_data = pd.concat([cleaned_data, riscaldamento_data], axis=1)
     
-    print("Cleaning climatizzatore...")
-    climatizzatore_data = data.apply(clean_climatizzatore, axis=1)
-    cleaned_data = pd.concat([cleaned_data, climatizzatore_data], axis=1)
+    print("Cleaning air conditioning...")
+    air_conditioning_data = data.apply(clean_air_conditioning, axis=1)
+    cleaned_data = pd.concat([cleaned_data, air_conditioning_data], axis=1)
     
-    print("Cleaning efficienza energetica...")
-    efficienza_data = data.apply(clean_efficienza_energetica, axis=1)
-    cleaned_data = pd.concat([cleaned_data, efficienza_data], axis=1)
+    print("Cleaning energy efficiency...")
+    energy_efficiency_data = data.apply(clean_energy_efficiency, axis=1)
+    cleaned_data = pd.concat([cleaned_data, energy_efficiency_data], axis=1)
     
-    print("Parsing altre caratteristiche...")
-    altre_caratteristiche_data = data.apply(parse_altre_caratteristiche, axis=1)
-    cleaned_data = pd.concat([cleaned_data, altre_caratteristiche_data], axis=1)
-    
-    print("Adding quartiere...")
-    cleaned_data['quartiere'] = data['quartiere']
-    quartiere_dummies = pd.get_dummies(cleaned_data['quartiere'], prefix='quartiere')
-    cleaned_data = pd.concat([cleaned_data, quartiere_dummies], axis=1)
-    
+    print("Parsing other features...")
+    other_features_data = data.apply(parse_additional_features, axis=1)
+    cleaned_data = pd.concat([cleaned_data, other_features_data], axis=1)
+
     print("Parsing description...")
     description_data = data.apply(parse_description, axis=1)
     cleaned_data = pd.concat([cleaned_data, description_data], axis=1)
+
+    print("Cleaning deposit...")
+    cleaned_data['deposit'] = data.apply(clean_deposit, axis=1)
+
+    print("Adding municipio...")
+    municipio_data = data.apply(add_municipio, axis=1)
+    cleaned_data = pd.concat([cleaned_data, municipio_data], axis=1)
     
-    print("Cleaning cauzione...")
-    cleaned_data['cauzione'] = data.apply(clean_cauzione, axis=1)
-    
-    # drop all with price or m2 as NaN
-    cleaned_data = cleaned_data.dropna(subset=['prezzo', 'm2'])
     
     # Reset index
     cleaned_data = cleaned_data.reset_index(drop=True)
-    
-    # Remove non-encoded string columns
-    to_remove = ['tipo_cucina', 'stato_condition', 'stato_renovation', 'efficienza_classe', 'quartiere']
-    for col in to_remove:
-        if col in cleaned_data.columns:
-            cleaned_data = cleaned_data.drop(col, axis=1)
     
     print(f"\nFinal cleaned dataset shape: {cleaned_data.shape}")
     
